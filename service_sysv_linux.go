@@ -184,7 +184,6 @@ func (s *sysv) Restart() error {
 }
 
 const sysvScript = `#!/bin/sh
-# For RedHat and cousins:
 # chkconfig: - 99 01
 # description: {{.Description}}
 # processname: {{.Path}}
@@ -203,8 +202,13 @@ cmd="{{.Path}}{{range .Arguments}} {{.|cmd}}{{end}}"
 
 name=$(basename $(readlink -f $0))
 pid_file="/var/run/$name.pid"
+{{if .LogOutput}}
 stdout_log="/var/log/$name.log"
 stderr_log="/var/log/$name.err"
+{{else}}
+stdout_log="/dev/null"
+stderr_log="/dev/null"
+{{end}}
 
 [ -e /etc/sysconfig/$name ] && . /etc/sysconfig/$name
 
